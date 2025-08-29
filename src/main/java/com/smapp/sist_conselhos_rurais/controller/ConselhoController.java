@@ -1,24 +1,46 @@
 package com.smapp.sist_conselhos_rurais.controller;
 
 import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 import com.smapp.sist_conselhos_rurais.models.Conselho;
-import com.smapp.sist_conselhos_rurais.repository.ConselhoRepository;
+import com.smapp.sist_conselhos_rurais.service.ConselhoService;
 
 @RestController
 @RequestMapping("/conselhos")
 public class ConselhoController {
 	
-	private final ConselhoRepository repo;
-    public ConselhoController(ConselhoRepository repo) { this.repo = repo; }
+	private final ConselhoService service;
 
-    @GetMapping public List<Conselho> listar(){ return repo.findAll(); }
-    @PostMapping public Conselho criar(@RequestBody Conselho c){ return repo.save(c); }
+    public ConselhoController(ConselhoService service) {
+        this.service = service;
+    }
 
+    @GetMapping
+    public List<Conselho> listar(@RequestParam(required = false) String nome) {
+        return service.listar(nome);
+    }
+    
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Conselho criar(@RequestBody Conselho c) {
+        return service.salvar(c);
+    }
+
+    @GetMapping("/{id}")
+    public Conselho obter(@PathVariable Long id) {
+        return service.obter(id);
+    }
+
+    @PutMapping("/{id}")
+    public Conselho atualizar(@PathVariable Long id, @RequestBody Conselho c) {
+        c.setIdconselho(id);
+        return service.salvar(c);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletar(@PathVariable Long id) {
+        service.deletar(id);
+    }
 }

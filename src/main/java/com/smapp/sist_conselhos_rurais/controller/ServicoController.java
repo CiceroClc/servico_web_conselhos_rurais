@@ -1,24 +1,46 @@
 package com.smapp.sist_conselhos_rurais.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.smapp.sist_conselhos_rurais.models.Servico;
-import com.smapp.sist_conselhos_rurais.repository.ServicoRepository;
+import com.smapp.sist_conselhos_rurais.service.ServicoService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/servicos")
 public class ServicoController {
 	
-	private final ServicoRepository repository;
-    public ServicoController(ServicoRepository repository){this.repository=repository;}
+	private final ServicoService service;
 
-    @GetMapping public List<Servico> listar(){return repository.findAll();}
-    @PostMapping public Servico salvar(@RequestBody Servico s){return repository.save(s);}
+    public ServicoController(ServicoService service){
+        this.service = service;
+    }
 
+    @GetMapping
+    public List<Servico> listar(@RequestParam(required = false) String nome) {
+        return service.listar(nome);
+    }
+
+    @GetMapping("/{id}")
+    public Servico obter(@PathVariable Long id) {
+        return service.obter(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Servico criar(@RequestBody Servico servico) {
+        return service.salvar(servico);
+    }
+
+    @PutMapping("/{id}")
+    public Servico atualizar(@PathVariable Long id, @RequestBody Servico servico) {
+        servico.setIdservico(id);
+        return service.salvar(servico);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletar(@PathVariable Long id) {
+        service.deletar(id);
+    }
 }

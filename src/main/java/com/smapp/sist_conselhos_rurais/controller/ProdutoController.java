@@ -1,24 +1,46 @@
 package com.smapp.sist_conselhos_rurais.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.smapp.sist_conselhos_rurais.models.Produto;
-import com.smapp.sist_conselhos_rurais.repository.ProdutoRepository;
+import com.smapp.sist_conselhos_rurais.service.ProdutoService;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @RestController
 @RequestMapping("/produtos")
 public class ProdutoController {
 	
-	private final ProdutoRepository repository;
-    public ProdutoController(ProdutoRepository repository){this.repository=repository;}
+	private final ProdutoService service;
+    
+    public ProdutoController(ProdutoService service){
+        this.service = service;
+    }
 
-    @GetMapping public List<Produto> listar(){return repository.findAll();}
-    @PostMapping public Produto salvar(@RequestBody Produto p){return repository.save(p);}
+    @GetMapping
+    public List<Produto> listar(@RequestParam(required = false) String nome) {
+        return service.listar(nome);
+    }
 
+    @GetMapping("/{id}")
+    public Produto obter(@PathVariable Long id) {
+        return service.obter(id);
+    }
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public Produto criar(@RequestBody Produto produto) {
+        return service.salvar(produto);
+    }
+
+    @PutMapping("/{id}")
+    public Produto atualizar(@PathVariable Long id, @RequestBody Produto produto) {
+        produto.setIdproduto(id);
+        return service.salvar(produto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deletar(@PathVariable Long id) {
+        service.deletar(id);
+    }
 }
