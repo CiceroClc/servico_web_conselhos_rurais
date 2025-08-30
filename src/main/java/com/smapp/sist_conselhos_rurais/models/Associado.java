@@ -3,6 +3,8 @@ package com.smapp.sist_conselhos_rurais.models;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -37,6 +39,7 @@ public class Associado
     private String cdc;
     private Boolean presidente_conselho = false;
 
+    @JsonBackReference
     @ManyToOne(optional = false)
     @JoinColumn(name = "idconselho")
     private Conselho conselho;
